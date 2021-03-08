@@ -1,7 +1,7 @@
 # linha.nvim 🪡
 
 `linha` is a simple to use and declarative statusline for neovim.
-You put the tables and give you lines.
+You put the tables and it give you lines.
 
 ## Install
 
