@@ -1,11 +1,11 @@
 # linha.nvim 🪡
 
 `linha` is a simple to use and declarative statusline for neovim.
-It uses components to build your statusline.
+You put the tables and give you lines.
 
 ## Install
 
-**Requirements:**
+#### Requirements
 
 - Neovim 0.5 (nightly build)
 
@@ -23,7 +23,7 @@ use {
 
 #### vim-plug
 
-```lua
+```vim
 Plug 'lucastrvsn/linha.nvim'
 
 lua << EOF
