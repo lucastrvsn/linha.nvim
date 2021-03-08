@@ -1,4 +1,4 @@
-# linha.nvim
+# linha.nvim 🪡
 
 `linha` is a simple to use and declarative statusline for neovim.
 It uses components to build your statusline.
