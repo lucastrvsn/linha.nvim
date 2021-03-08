@@ -47,13 +47,12 @@ M.create_highlight = function(group, style)
 
   if style_type == 'nil' then
     create_highlight_from_empty(group_name)
-
     return group_name
   end
 
   assert(
     style_type == 'string' or style_type == 'table',
-    'Linha: "style" needs to an String or Table.'
+    'Linha: "highlight" needs to an string or table.'
   )
 
   if style_type == 'string' then
@@ -63,12 +62,6 @@ M.create_highlight = function(group, style)
   end
 
   return group_name
-end
-
-M.create_highlights = function(highlights)
-  for k, v in pairs(highlights) do
-    M.create_highlight(k, v)
-  end
 end
 
 --- Create the theme for all highlights

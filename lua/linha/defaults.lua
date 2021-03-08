@@ -2,45 +2,83 @@ local modules = require('linha/modules')
 
 local M = {}
 
+local color_pallete = {
+  background = "#3a3735",
+  foreground = "#ddc7a1",
+  red = '#ea6962',
+  green = '#a9b665',
+  yellow = '#d8a657',
+  orange = '#e78a4e',
+  blue = '#7daea3',
+  magenta = '#d3869b',
+  cyan = '#0e363e'
+}
+
 M.config = {
   active = {
     left = {
       {
         name = 'Mode',
         module = modules.mode,
-        highlight = { fg = '#ffffff', bg = '#000000' }
+        prefix = ' ',
+        suffix = ' '
       },
       {
-        name = 'ModeTest',
-        module = function()
-          return vim.fn.mode()
-        end
+        name = 'Space',
+        module = function() return ' ' end
       },
+      -- {
+      --   name = 'FileName',
+      --   module = modules.filename,
+      --   highlight = { fg = '#ffff00' }
+      -- },
+      -- {
+      --   name = 'FileFullPath',
+      --   module = modules.filefullpath,
+      --   highlight = { fg = '#ffff00' }
+      -- },
       {
-        name = 'FileName',
-        module = modules.filename,
+        name = 'FilePath',
+        module = modules.filepath,
         highlight = { fg = '#ffff00' }
       },
       {
-        name = 'BufferNumber',
-        module = modules.buffernumber,
-        highlight = { fg = '#ff0000' }
+        name = 'Space',
+        module = function() return ' ' end
       },
       {
         name = 'BufferStatus',
         module = modules.bufferstatus,
-        highlight = 'Number'
+        highlight = {
+          fg = '#ffffff'
+        }
       },
       {
         name = 'Diagnostics',
         module = modules.diagnostics
+      }
+    },
+    right = {
+      {
+        name = 'FileType',
+        module = modules.filetype
       },
       {
-        name = 'ShellCommand',
-        module = function()
-          return 'olá', { fg = '#e0e0e0', bg = '#ff00ff' }
-        end
+        name = 'LinePercent',
+        module = modules.linepercent
       }
+    }
+  },
+  inactive = {
+    left = {
+      {
+        name = 'FileName',
+        module = modules.filename,
+      },
+      {
+        name = 'BufferNumber',
+        module = modules.buffernumber
+      },
     },
     right = {
       {
@@ -48,54 +86,53 @@ M.config = {
         module = modules.filetype
       }
     }
-  },
-  inactive = {}
+  }
 }
 
 M.theme = {
   ['ModeNormal'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.foreground
   },
   ['ModeVisual'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.magenta
   },
   ['ModeSelect'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.foreground
   },
   ['ModeInsert'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.blue
   },
   ['ModeReplace'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.green
   },
   ['ModeCommand'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
   ['ModePrompt'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
   ['ModeMore'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
   ['ModeConfirm'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
   ['ModeShell'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
   ['ModeTerminal'] = {
-    fg = '#00ff00',
-    bg = '#ff00ff',
+    fg = color_pallete.background,
+    bg = color_pallete.red
   },
 }
 

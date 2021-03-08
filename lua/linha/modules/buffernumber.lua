@@ -1,3 +1,3 @@
 return function()
-  return '%n%p'
+  return '%n'
 end

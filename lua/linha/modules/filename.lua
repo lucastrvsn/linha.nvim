@@ -1,3 +1,3 @@
 return function()
-  return '%t'
+  return '%f'
 end
