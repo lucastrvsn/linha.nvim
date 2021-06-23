@@ -18,17 +18,19 @@ local get_diagnostics_from_type = function(type)
       count = count + count_from_lsp
     end
 
-    if count ~= 0 then return count end
+    if count ~= 0 then
+      return count
+    end
   end
 end
 
-local build_content = function()
-  local content = ''
+local provider = function()
+  local content = ""
   local diagnostics = {
-    errors = get_diagnostics_from_type('Error'),
-    warnings = get_diagnostics_from_type('Warning'),
-    hints = get_diagnostics_from_type('Hint'),
-    infos = get_diagnostics_from_type('Information'),
+    errors = get_diagnostics_from_type "Error",
+    warnings = get_diagnostics_from_type "Warning",
+    hints = get_diagnostics_from_type "Hint",
+    infos = get_diagnostics_from_type "Information",
   }
 
   for k, v in pairs(diagnostics) do
@@ -40,6 +42,6 @@ local build_content = function()
   return content
 end
 
-return function()
-  return build_content()
-end
+return {
+  provider = provider,
+}

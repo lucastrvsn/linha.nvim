@@ -1,96 +1,116 @@
+local get_module = require('linha/modules').get_module
+local create_highlight = require('linha/highlight').create_highlight
+
 local M = {}
 
-M.config = {}
 M.modules_active_left = {}
 M.modules_active_right = {}
 M.modules_inactive_left = {}
 M.modules_inactive_right = {}
 
---- Parse the suffix and prefix addons.
+--- Parse the `before` and `after` addons.
 -- @param name string Module name
--- @return prefix, suffix
-local parse_addons = function(name, prefix, suffix)
-  local addon_prefix = nil
-  local addon_suffix = nil
+-- @return before, after
+local parse_addons = function(name, before, after)
+  local addon_before = nil
+  local addon_after = nil
 
-  if prefix ~= nil then
-    if type(prefix) == 'string' then
-      addon_prefix = prefix
-    elseif type(prefix) == 'table' then
-      addon_prefix = { content = suffix.content }
+  if before ~= nil then
+    if type(before) == 'string' then
+      addon_before = before
+    elseif type(before) == 'table' then
+      addon_before = { content = before.content }
 
-      if prefix.highlight ~= nil then
-        addon_prefix['highlight'] = require('linha/highlight')
-          .create_highlight(name .. 'Prefix', prefix.highlight)
+      if before.highlight ~= nil then
+        addon_before['highlight'] = create_highlight(
+          name .. 'Before',
+          before.highlight
+        )
       end
     end
   end
 
-  if suffix ~= nil then
-    if type(suffix) == 'string' then
-      addon_suffix = suffix
-    elseif type(suffix) == 'table' then
-      addon_suffix = { content = suffix.content }
+  if after ~= nil then
+    if type(after) == 'string' then
+      addon_after = after
+    elseif type(after) == 'table' then
+      addon_after = { content = after.content }
 
-      if suffix.highlight ~= nil then
-        addon_suffix['highlight'] = require('linha/highlight')
-          .create_highlight(name .. 'Suffix', suffix.highlight)
+      if after.highlight ~= nil then
+        addon_after['highlight'] = create_highlight(
+          name .. 'After',
+          after.highlight
+        )
       end
     end
   end
 
-  return addon_prefix, addon_suffix
+  return addon_before, addon_after
 end
 
-local parse_module = function(module, prefix)
-  local module_name = prefix .. module.name
-  local m = { module = module.module }
-  local module_prefix, module_suffix = parse_addons(module_name,
-    module.prefix,
-    module.suffix
+local parse_module = function(name, module, prefix)
+  local module_name = prefix .. name
+  local m = {
+    _group_name = module_name,
+    provider = module.provider
+  }
+  local module_before, module_after = parse_addons(module_name,
+    module.before,
+    module.after
   )
 
   if module.highlight ~= nil then
-    m['highlight'] = require('linha/highlight').create_highlight(
-      module_name,
-      module.highlight
-    )
+    m['highlight'] = create_highlight(module_name, module.highlight)
   end
 
-  if module_prefix ~= nil then
-    m['prefix'] = module_prefix
+  if module_before ~= nil then
+    m['before'] = module_before
   end
 
-  if module_suffix ~= nil then
-    m['suffix'] = module_suffix
+  if module_after ~= nil then
+    m['after'] = module_after
   end
 
   return m
 end
 
-local parse_modules = function(modules)
+local parse = function(modules)
   local modules_left = {}
   local modules_right = {}
+  local is_right_side = false
 
-  for _, module in pairs(modules.left) do
-    table.insert(modules_left, parse_module(module, 'Left'))
-  end
+  for _, name in ipairs(vim.split(modules, '|')) do
+    if name == '=' then
+      is_right_side = true
+      goto continue
+    end
 
-  for _, module in pairs(modules.right) do
-    table.insert(modules_right, parse_module(module, 'Right'))
+    local module = get_module(name)
+
+    if module ~= nil then
+      if not is_right_side then
+        table.insert(modules_left, parse_module(name, module, 'Left'))
+      else
+        table.insert(modules_right, parse_module(name, module, 'Right'))
+      end
+    end
+
+    ::continue::
   end
 
   return modules_left, modules_right
 end
 
-M.create_config = function(config)
-  M.config = config or require('linha/defaults').config
-  M.modules_active_left, M.modules_active_right = parse_modules(
-    M.config['active']
-  )
-  M.modules_inactive_left, M.modules_inactive_right = parse_modules(
-    M.config['inactive']
-  )
+--- Initialize the configuration used by all other modules
+-- @param builder table
+M.init = function(opts)
+  opts = opts or {}
+
+  local active_builder = opts.active or require('linha/defaults').builder.active
+  local inactive_builder = opts.inactive or require('linha/defaults').builder.inactive
+
+  M.modules_active_left, M.modules_active_right = parse(active_builder)
+  M.modules_inactive_left, M.modules_inactive_right = parse(inactive_builder)
 end
 
 return M

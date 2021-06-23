@@ -1,27 +1,44 @@
 local M = {}
 
-M.buffernumber = require('linha/modules/buffernumber')
+M._builtin = {
+  BufferNumber = require "linha/modules/buffer_number",
+  BufferStatus = require "linha/modules/buffer_status",
+  Diagnostics = require "linha/modules/diagnostics",
+  FileName = require "linha/modules/file_name",
+  FilePath = require "linha/modules/file_path",
+  FileFullPath = require "linha/modules/file_full_path",
+  FileType = require "linha/modules/file_type",
+  GitBranch = require "linha/modules/git_branch",
+  GitDiff = require "linha/modules/git_diff",
+  LinePercent = require "linha/modules/line_percent",
+  Mode = require "linha/modules/mode",
+}
 
-M.bufferstatus = require('linha/modules/bufferstatus')
+M._custom = {}
 
-M.diagnostics = require('linha/modules/diagnostics')
+M.get_module = function(name)
+  if type(name) == "string" then
+    local module = M._builtin[name] or M._custom[name]
 
-M.filename = require('linha/modules/filename')
+    if module ~= nil then
+      return module
+    end
+  end
 
-M.filepath = require('linha/modules/filepath')
+  return nil
+end
 
-M.filetype = require('linha/modules/filetype')
+M.add_module = function(name, opts)
+  assert(type(name) == "string")
+  assert(type(opts) == "table")
 
-M.gitbranch = require('linha/modules/gitbranch')
+  M._custom[name] = opts
+end
 
-M.gitdiff = require('linha/modules/gitdiff')
-
-M.linepercent = require('linha/modules/linepercent')
-
-M.mode = require('linha/modules/mode')
-
-M.create_module = function()
-  -- TODO(lucastrvsn): easy way to create new dynamic modules
+M.init = function(custom_modules)
+  if type(custom_modules) == "table" then
+    M._custom = custom_modules
+  end
 end
 
 return M

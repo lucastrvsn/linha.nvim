@@ -1,36 +1,44 @@
+local create_highlight = require("linha/highlight").create_highlight
+
 local M = {}
 
 M.render = function(module, opts)
   if not module then
-    vim.cmd('echoerr "module not found."')
-    return ''
+    vim.cmd 'echoerr "module not found."'
+    return ""
   end
 
-  local section = ''
-  local module_content, module_highlight = module.module(opts)
+  local section = ""
+  local module_content, module_highlight = module.provider(opts)
+
+  -- If internal highlight is a table, generate the highlight for it
+  if type(module_highlight) == "table" then
+    module_highlight = create_highlight(module._group_name, module_highlight)
+  end
+
   local prefix_to_add = nil
 
   -- Prefix
-  if module.prefix ~= nil then
-    local prefix_type = type(module.prefix)
+  if module.before ~= nil then
+    local before_type = type(module.before)
 
-    if prefix_type == 'string' then
-      prefix_to_add = module.prefix
-    elseif prefix_type == 'table' then
-      if module.prefix.highlight ~= nil then
-        section = section .. '%#' .. module.prefix.highlight .. '#'
-        section = section .. module.prefix.content
+    if before_type == "string" then
+      prefix_to_add = module.before
+    elseif before_type == "table" then
+      if module.before.highlight ~= nil then
+        section = section .. "%#" .. module.before.highlight .. "#"
+        section = section .. module.before.content
       else
-        prefix_to_add = module.prefix.content
+        prefix_to_add = module.before.content
       end
     end
   end
 
   -- Internal highlight has precedence over user-defined
   if module_highlight ~= nil then
-    section = section .. '%#' .. module_highlight .. '#'
+    section = section .. "%#" .. module_highlight .. "#"
   elseif module.highlight ~= nil then
-    section = section .. '%#' .. module.highlight .. '#'
+    section = section .. "%#" .. module.highlight .. "#"
   end
 
   if prefix_to_add ~= nil then
@@ -39,23 +47,23 @@ M.render = function(module, opts)
     section = section .. module_content
   end
 
-  -- Suffix
-  if module.suffix ~= nil then
-    local suffix_type = type(module.suffix)
+  -- After
+  if module.after ~= nil then
+    local after_type = type(module.after)
 
-    if suffix_type == 'string' then
-      section = section .. module.suffix
-    elseif suffix_type == 'table' then
-      if module.suffix.highlight ~= nil then
-        section = section .. '%#' .. module.suffix.highlight .. '#'
+    if after_type == "string" then
+      section = section .. module.after
+    elseif after_type == "table" then
+      if module.after.highlight ~= nil then
+        section = section .. "%#" .. module.after.highlight .. "#"
       end
 
-      section = section .. module.suffix.content
+      section = section .. module.after.content
     end
   end
 
   -- Reset the highlight group
-  section = section .. '%*'
+  section = section .. "%*"
 
   return section
 end
